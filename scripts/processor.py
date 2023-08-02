@@ -263,6 +263,31 @@ class OpenposeModel(object):
 
 g_openpose_model = OpenposeModel()
 
+class DWPoseModel(object):
+    def __init__(self) -> None:
+        self.model = None
+
+    def run_model(
+            self,
+            img: np.ndarray,
+            res: int = 512,
+            **kwargs  # Ignore rest of kwargs
+    ) -> Tuple[np.ndarray, bool]:
+        img, remove_pad = resize_image_with_pad(img, res)
+
+        if self.model is None:
+            from annotator.dwpose import DWposeDetector
+            self.model = DWposeDetector()
+
+        return remove_pad(self.model(img)), True
+
+    def unload(self):
+        if self.model is not None:
+            self.model.unload_model()
+
+
+g_dwpose_model = DWPoseModel()
+
 model_uniformer = None
 
 
